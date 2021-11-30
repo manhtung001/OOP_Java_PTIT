@@ -18,6 +18,7 @@ public class BanDoc implements Serializable {
     private static int sma=10000;
 
     public BanDoc() {
+        ma=sma++;
     }
 
     public BanDoc(int ma, String hoten, String dchi, String dthoai) {

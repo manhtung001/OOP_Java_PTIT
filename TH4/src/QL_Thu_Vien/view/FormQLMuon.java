@@ -60,7 +60,13 @@ public class FormQLMuon extends javax.swing.JPanel {
         
         String fbd="src/QL_Thu_Vien/controller/bandoc.txt";
         
-        List<BanDoc> l1=IOFile.doc(fbd);
+        File f=new File(fbd);
+        List<BanDoc> l1;
+        if(f.exists()) {
+           l1 = IOFile.doc(fbd);
+        } else
+           l1=new ArrayList<>();
+        
         if(l1!=null){
             for(BanDoc i:l1)
                 cbMabd.addItem(i.getMa()+"");

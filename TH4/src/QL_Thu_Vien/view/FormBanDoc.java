@@ -332,7 +332,8 @@ public class FormBanDoc extends javax.swing.JPanel {
                     throw new TrongException();
                  
                 sdt=jTextField4.getText();
-                if(!sdt.matches("//d++")) throw new DienThoaiException();
+                if(!sdt.matches("[0-9]+"))
+                    throw new DienThoaiException();
                 
                 BanDoc b = new BanDoc(ma, hoten, diachi, sdt);
                 tm.addRow(b.toObject());
@@ -344,7 +345,7 @@ public class FormBanDoc extends javax.swing.JPanel {
                  JOptionPane.showMessageDialog(this, "Khong de trong!!");
                  jTextField2.requestFocus();
              }
-             catch (DienThoaiException ex) {
+             catch (DienThoaiException e) {
                 JOptionPane.showMessageDialog(this, "Dien thoai phai la so");
                 jTextField4.requestFocus();
             }
@@ -358,7 +359,7 @@ public class FormBanDoc extends javax.swing.JPanel {
            
             sdt=jTextField4.getText();
             try {
-                if (!sdt.matches("//d+")) 
+                if(!sdt.matches("[0-9]+"))
                     throw new DienThoaiException();
             } catch(DienThoaiException e) {
                 JOptionPane.showMessageDialog(this, "dien thoai phai la so");
