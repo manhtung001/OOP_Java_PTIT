@@ -97,6 +97,9 @@ public class Main extends javax.swing.JFrame {
         btThem = new javax.swing.JButton();
         btXoa = new javax.swing.JButton();
         btLuu = new javax.swing.JButton();
+        jLabel8 = new javax.swing.JLabel();
+        jTextField6 = new javax.swing.JTextField();
+        btTimTour = new javax.swing.JButton();
         p2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
@@ -200,6 +203,15 @@ public class Main extends javax.swing.JFrame {
             }
         });
 
+        jLabel8.setText("Tim theo kieu:");
+
+        btTimTour.setText("Tim");
+        btTimTour.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btTimTourActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout p1Layout = new javax.swing.GroupLayout(p1);
         p1.setLayout(p1Layout);
         p1Layout.setHorizontalGroup(
@@ -216,6 +228,12 @@ public class Main extends javax.swing.JFrame {
                 .addComponent(btXoa)
                 .addGap(99, 99, 99)
                 .addComponent(btLuu)
+                .addGap(68, 68, 68)
+                .addComponent(jLabel8)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btTimTour)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         p1Layout.setVerticalGroup(
@@ -228,7 +246,10 @@ public class Main extends javax.swing.JFrame {
                 .addGroup(p1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btThem)
                     .addComponent(btXoa)
-                    .addComponent(btLuu))
+                    .addComponent(btLuu)
+                    .addComponent(jLabel8)
+                    .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btTimTour))
                 .addGap(107, 107, 107))
         );
 
@@ -451,6 +472,15 @@ public class Main extends javax.swing.JFrame {
         IOFile.viet(fk, lk);
     }//GEN-LAST:event_btLuu1ActionPerformed
 
+    private void btTimTourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btTimTourActionPerformed
+        String key=jTextField6.getText().trim().toLowerCase();
+        List<Tour> l=new ArrayList<>();
+        for(Tour i:lt)
+            if(i.getKieu().toLowerCase().contains(key))
+                l.add(i);
+        showTour(l);
+    }//GEN-LAST:event_btTimTourActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -492,6 +522,7 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JButton btSua;
     private javax.swing.JButton btThem;
     private javax.swing.JButton btThem1;
+    private javax.swing.JButton btTimTour;
     private javax.swing.JButton btXoa;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JComboBox<String> jComboBox2;
@@ -502,6 +533,7 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
@@ -514,6 +546,7 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
+    private javax.swing.JTextField jTextField6;
     private javax.swing.JPanel p1;
     private javax.swing.JPanel p2;
     // End of variables declaration//GEN-END:variables
