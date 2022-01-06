@@ -1,0 +1,567 @@
+
+IOFile.java
+
+package controller;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class IOFile {
+    
+    public static <T> List<T> doc(String file) {
+        List<T> list = new ArrayList<>();
+        try{
+            ObjectInputStream o=new ObjectInputStream(new FileInputStream(file));
+            list=(List<T>)o.readObject();
+            o.close();
+        } catch(IOException e) {
+            System.out.println(e);
+        } catch(ClassNotFoundException e) {
+            System.out.println(e);
+        }
+        return list;
+    }
+    
+    public static <T> void viet(String file, List<T> arr) {
+        List<T> list = new ArrayList<>();
+        try{
+            ObjectOutputStream o=new ObjectOutputStream(new FileOutputStream(file));
+            o.writeObject(arr);
+            o.close();
+        } catch(IOException e) {
+            System.out.println(e);
+        } 
+    }
+    
+}
+
+-------------------------------------------------------------------------------------------
+SoDienThoaiException.java
+
+package controller;
+
+public class SoDienThoaiException extends Exception {
+    
+}
+
+-------------------------------------------------------------------------------------------
+Tour.java
+
+package model;
+import java.io.Serializable;
+
+public class Tour implements Serializable {
+    
+//    1 ngày, dưới 5 ngày, dưới 7 ngày, dài ngày
+    
+    private int ma;
+    private String kieu, thongtin;
+    private double dongia;
+    private static int sma=1000;
+
+    public Tour() {
+    }
+
+    public Tour(String kieu, String thongtin, double dongia)
+    {
+        this.ma = sma++;
+        this.kieu = kieu;
+        this.thongtin = thongtin;
+        this.dongia = dongia;
+    }
+
+   //getter and setter
+    
+    public Object[] toObject() {
+        return new Object[] {
+            ma, kieu, thongtin, dongia
+        };        
+    };
+    
+}
+
+-------------------------------------------------------------------------------------------
+KhachHang.java
+
+package model;
+import controller.TrongException;
+import java.io.Serializable;
+
+public class KhachHang implements Serializable {
+    
+    private int ma;
+    private String ten, kieu;
+    private static int sma=100;
+
+    public KhachHang() {
+    }
+
+    public KhachHang(int ma, String ten, String kieu) {
+        this.ma = ma;
+        this.ten = ten;
+        this.kieu = kieu;
+    }
+    
+    public KhachHang(String ten, String kieu)
+            throws TrongException
+    {
+        if(ten.isEmpty()) throw new TrongException();
+        this.ma = sma++;
+        this.ten = ten;
+        this.kieu = kieu;
+    }
+
+	//getter and setter
+    
+    public Object[] toObject() {
+        return new Object[] {
+            ma, ten, kieu
+        };        
+    };
+}
+
+-------------------------------------------------------------------------------------------
+QuanLyDat.java
+
+package model;
+import java.io.Serializable;
+
+public class QuanLyDat  implements Serializable {
+    
+    private KhachHang KhachHang;
+    private  Tour Tour;
+    private int soluong;
+    private String ngayDat;
+
+    public QuanLyDat() {
+    }
+
+    public QuanLyDat(KhachHang KhachHang, Tour Tour, int soluong, String ngayDat) {
+        this.KhachHang = KhachHang;
+        this.Tour = Tour;
+        this.soluong = soluong;
+        this.ngayDat = ngayDat;
+    }
+    
+    public String getMavaten() {
+        return Tour.getMa()+"";
+    }
+    
+//    public Double tinhCong() {
+//        Double tiencong = 0.2*(double)soluong*(dichvu.getCuoc()-dichvu.getCphi());
+//        tiencong = (double) Math.floor(tiencong * 100) / 100;
+//        return tiencong;
+//    }
+
+   	//getter and setter
+    
+    public Object[] toObject() {
+        return new Object[] {
+            KhachHang.getMa(), KhachHang.getTen(), Tour.getMa(), Tour.getDongia(), soluong, ngayDat
+        };        
+    };
+}
+
+-------------------------------------------------------------------------------------------
+Main.java
+
+package view;
+
+import controller.DienThoaiException;
+import controller.IOFile;
+import controller.TrongException;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import model.KhachHang;
+import model.QuanLyDat;
+import model.Tour;
+
+public class Main extends javax.swing.JFrame {
+
+    
+    DefaultTableModel tm1, tm2, tmql;
+    String f1, f2, fql;
+    List<Tour> L1;
+    List<KhachHang> L2;
+    List<QuanLyDat> lql;
+    
+    public Main() {
+        initComponents();
+        f1="src/controller/TOUR.DAT";
+        f2="src/controller/KH.DAT";
+        fql="src/controller/DATTOUR.DAT";
+        String[] title1={"ma","kieu","thong tin","don gia"};
+        String[] title2={"ma","ten", "kieu"};
+        String[] ql={"ma khach","ten khach","ma tour", "don gia", "so luong", "ngay dat"};
+        tm1 = new DefaultTableModel(title1, 0);
+        tm2 = new DefaultTableModel(title2, 0);
+        tmql = new DefaultTableModel(ql, 0);
+        jTable1.setModel(tm1);
+        jTable2.setModel(tm2);
+        jTable3.setModel(tmql);
+        load_1();
+        load_2();
+        loadQL();
+        load2Ma();
+        show_1(L1);
+        show_2(L2);
+        showQL(lql);
+    }
+    
+    private void load_1() {
+        File f=new File(f1);
+        if(f.exists()) 
+            L1=IOFile.doc(f1);
+        else 
+            L1=new ArrayList<>();
+    }
+    
+    private void load_2() {
+        File f=new File(f2);
+        if(f.exists()) 
+            L2=IOFile.doc(f2);
+        else 
+            L2=new ArrayList<>();
+    }
+    
+    private void load2Ma() {
+        jComboBox2.removeAllItems();
+        jComboBox3.removeAllItems();
+        
+        for(KhachHang i:L2)
+            jComboBox2.addItem(i.getMa()+"");
+        
+        for(Tour i:L1)
+            jComboBox3.addItem(i.getMa()+"");           
+    }
+    
+    private void loadQL() {
+        File f=new File(fql);
+        if(f.exists()) 
+            lql=IOFile.doc(fql);
+        else 
+            lql=new ArrayList<>();
+    }
+    
+    private void show_1(List<Tour> list) {
+        tm1.setRowCount(0);
+        for(Tour i:list)
+            tm1.addRow(i.toObject());
+    }
+    
+    private void show_2(List<KhachHang> list) {
+        tm2.setRowCount(0);
+        for(KhachHang i:list)
+            tm2.addRow(i.toObject());
+    }
+    
+    private void showQL(List<QuanLyDat> list) {
+        tmql.setRowCount(0);
+        for(QuanLyDat i:list)
+            tmql.addRow(i.toObject());
+    }        
+          
+		---------------------------TOUR------------------------------  
+
+    private void btThemActionPerformed(java.awt.event.ActionEvent evt) {                                       
+        int n=L1.size();
+        if(n>0)
+            Tour.setSma(L1.get(n-1).getMa()+1);
+        jTextField1.setText(Tour.getSma()+"");
+        String kieu, thongtin;
+        Double gia;
+        try{
+            kieu=jComboBox1.getSelectedItem().toString();
+            thongtin=jTextArea2.getText();
+            gia=Double.parseDouble(jTextField3.getText());
+            Tour tour=new Tour(kieu, thongtin, gia);
+            tm1.addRow(tour.toObject());
+            L1.add(tour);
+        }
+        catch(NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "gia phai la so");
+        } 
+    }                                      
+
+    private void btXoaActionPerformed(java.awt.event.ActionEvent evt) {                                      
+        int r=jTable1.getSelectedRow();
+        if(r>=0&&r<jTable1.getRowCount()) {
+            tm1.removeRow(r);
+            L1.remove(r);
+        } else
+            JOptionPane.showMessageDialog(this, "chon tour de xoa");
+    }                                     
+
+    private void btLuuActionPerformed(java.awt.event.ActionEvent evt) {                                      
+        IOFile.viet(f1, L1);
+    } 
+
+		// sap xep tour                                      
+    private void jComboBox5ItemStateChanged(java.awt.event.ItemEvent evt) {                                            
+         if(jComboBox5.getSelectedIndex()==1){
+            L1.sort(new Comparator<Tour>() {
+                @Override
+                public int compare(Tour o1, Tour o2) {
+                   return o1.getKieu().compareToIgnoreCase(o2.getKieu());
+                }
+            });
+        }
+        if(jComboBox5.getSelectedIndex()==2){
+            L1.sort(new Comparator<Tour>() {
+                @Override
+                public int compare(Tour o1, Tour o2) {
+                    return Double.compare(o1.getDongia(), o2.getDongia());
+                }
+            });
+        }
+        
+        tm1.setRowCount(0);
+        for(Tour i:L1)
+            tm1.addRow(i.toObject());
+    } 
+	
+	// tim theo ten
+
+	private void TimActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        	String key=jTextField11.getText().trim().toLowerCase();
+        	List<NhanVien> l=new ArrayList<>();
+        	for(NhanVien i:lnv) 
+            		if(i.getHoten().toLowerCase().contains(key))
+                		l.add(i);
+        	showNV(l);
+    	} 
+
+	--------------------------KhachHang-----------------------------                                    
+
+    private void btThem1ActionPerformed(java.awt.event.ActionEvent evt) {                                        
+        int n=L2.size();
+        if(n>0)
+            KhachHang.setSma(L2.get(n-1).getMa()+1);
+        jTextField5.setText(KhachHang.getSma()+"");
+        String ten, kieukhach;
+        try{
+            ten=jTextField6.getText();
+            kieukhach=jComboBox4.getSelectedItem().toString();
+            KhachHang khach=new KhachHang(ten, kieukhach);
+            tm2.addRow(khach.toObject());
+            L2.add(khach);
+        }
+        catch(TrongException e) {
+            JOptionPane.showMessageDialog(this, "ten hoac dia chi khong de trong");
+        }
+    }                                       
+
+    private void jTable2MouseClicked(java.awt.event.MouseEvent evt) {                                     
+        int r=jTable2.getSelectedRow();
+        jTextField5.setText(tm2.getValueAt(r, 0).toString());
+        jTextField6.setText(tm2.getValueAt(r, 1).toString());
+        String kieukhach=tm2.getValueAt(r, 2).toString();
+        for(int i=0; i<jComboBox4.getItemCount(); i++) {
+            if(jComboBox4.getItemAt(i).toString().equals(kieukhach))
+                jComboBox4.setSelectedIndex(i);
+        }
+    }                                    
+
+    private void btSuaActionPerformed(java.awt.event.ActionEvent evt) {                                      
+        int r=jTable2.getSelectedRow();
+        if(r>=0&&r<jTable2.getRowCount()) {
+            String hoten=jTextField6.getText();
+            String kieukhach=jComboBox4.getSelectedItem().toString();
+            tm2.setValueAt(hoten, r, 1);
+            tm2.setValueAt(kieukhach, r, 2);
+            int ma=Integer.parseInt(jTextField5.getText());
+            KhachHang khach=new KhachHang(ma, hoten, kieukhach);
+            L2.set(r, khach);
+        } else
+            JOptionPane.showMessageDialog(this, "chon khach hang de sua");
+    }                                     
+
+    private void btLuu1ActionPerformed(java.awt.event.ActionEvent evt) {                                       
+        IOFile.viet(f2, L2);
+    }            
+
+	--------------------------QuanLyDat-----------------------------                             
+
+     private Tour getTourbyMa(int ma) {
+        for(Tour i:L1)
+            if(i.getMa()==ma)
+                return i;
+        return null;
+    }
+     
+    private KhachHang getKhachHangbyMa(int ma) {
+        for(KhachHang i:L2)
+            if(i.getMa()==ma)
+                return i;
+        return null;
+    }
+    
+    private boolean trung2Ma(int maKhach, int maTour) {
+        for(QuanLyDat i:lql)
+            if(i.getTour().getMa()==maTour && i.getKhachHang().getMa()==maKhach)
+                return true;
+        return false;
+    }
+    
+    private boolean checkNgayBatDau(int maKhach, String ngayBD) {
+        int count = 0;
+        for(QuanLyDat i:lql)
+            if(i.getNgayDat().equals(ngayBD) && i.getKhachHang().getMa()==maKhach)
+                return true;
+        return false;
+    }
+    
+    //    private int demLoaiVe(int maNguoiMua) {
+//        int count = 0;
+//        for(HoaDon i:lql)
+//            if(i.getNguoimua().getMa()==maNguoiMua)
+//                count++;
+//        return count;
+//    }
+    
+    private void btThem2ActionPerformed(java.awt.event.ActionEvent evt) {                                        
+        try {
+            int maKhach=Integer.parseInt(jComboBox2.getSelectedItem().toString());
+            int maTour=Integer.parseInt(jComboBox3.getSelectedItem().toString());
+            if(trung2Ma(maKhach, maTour)) {
+                JOptionPane.showMessageDialog(this, "Trung 2 ma!");
+                jComboBox2.requestFocus();
+                return;
+            }
+
+	
+		// System.out.println(java.time.LocalDateTime.now());
+
+            int soluong=Integer.parseInt(jTextField12.getText());
+            String ngayBatDau=jTextField13.getText();
+            if(!ngayBatDau.matches("^(0?[1-9]|[12][0-9]|3[01])/(0?[1-9]|1[012])/(\\d{4})$")) {
+                JOptionPane.showMessageDialog(this, "ngay phai dung dinh dang dd/mm/yyyy");
+                return;
+            }
+            KhachHang khach=getKhachHangbyMa(maKhach);
+            Tour tour=getTourbyMa(maTour);
+            if(khach==null || tour==null) {
+                JOptionPane.showMessageDialog(this, "khong ton tai 1 trong 2 ma");
+                return;
+            }
+            if(checkNgayBatDau(maKhach, ngayBatDau)) {
+                JOptionPane.showMessageDialog(this, "Nguoi nay da bi trung ngay bat dau");
+                jComboBox2.requestFocus();
+                return;
+            }
+            if(soluong < 1 || soluong > 20) {
+                JOptionPane.showMessageDialog(this, "So luong nguoi phai trong khang 1 den 20");
+                jComboBox2.requestFocus();
+                return;
+            }
+            QuanLyDat ql = new QuanLyDat(khach, tour, soluong, ngayBatDau);
+            tmql.addRow(ql.toObject());
+            lql.add(ql);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "so luong la so");
+        }
+    }                                       
+
+    private void btXoa2ActionPerformed(java.awt.event.ActionEvent evt) {                                       
+        int r=jTable3.getSelectedRow();
+        if(r>=0&&r<jTable3.getRowCount()) {
+            tmql.removeRow(r);
+            lql.remove(r);
+        } else
+            JOptionPane.showMessageDialog(this, "chon hang de xoa");
+    }                                      
+
+    private void btLuu2ActionPerformed(java.awt.event.ActionEvent evt) {                                       
+        IOFile.viet(fql, lql);
+    }                                      
+
+    private void btLamTuoiActionPerformed(java.awt.event.ActionEvent evt) {                                          
+        load2Ma();
+    }                                         
+
+    private void cbSapXepItemStateChanged(java.awt.event.ItemEvent evt) {                                          
+        if(cbSapXep.getSelectedIndex()==1){
+            lql.sort(new Comparator<QuanLyDat>() {
+                @Override
+                public int compare(QuanLyDat o1, QuanLyDat o2) {
+                    String[] ngay1=o1.getNgayDat().split("/");
+                    String[] ngay2=o2.getNgayDat().split("/");
+                    String tongNgay1=ngay1[2]+ngay1[1]+ngay1[0];
+                    String tongNgay2=ngay2[2]+ngay2[1]+ngay2[0];
+                    return tongNgay1.compareToIgnoreCase(tongNgay2);
+                }
+            });
+        }
+        if(cbSapXep.getSelectedIndex()==2){
+            lql.sort(new Comparator<QuanLyDat>() {
+                @Override
+                public int compare(QuanLyDat o1, QuanLyDat o2) {
+                    return Double.compare(o1.getTour().getDongia(), o2.getTour().getDongia());
+                }
+            });
+        }
+
+		// sx theo ten
+ 	if(cbSapXep.getSelectedIndex()==3){
+            lql.sort(new Comparator<DanhSachChamCong>() {
+                @Override
+                public int compare(DanhSachChamCong o1, DanhSachChamCong o2) {
+                    String[] ten1=o1.getCongnhan().getHoten().split("\\s+");
+                    String[] ten2=o2.getCongnhan().getHoten().split("\\s+");
+                    if(ten1[ten1.length-1].equalsIgnoreCase(ten2[ten2.length-1])) {
+                        return o1.getCongnhan().getHoten().compareToIgnoreCase(o2.getCongnhan().getHoten());
+                    } else 
+                        return ten1[ten1.length-1].compareToIgnoreCase(ten2[ten2.length-1]);
+                }
+            });
+        }
+        
+        tmql.setRowCount(0);
+        for(QuanLyDat i:lql)
+            tmql.addRow(i.toObject());
+    }                                         
+
+    private void btThongKeActionPerformed(java.awt.event.ActionEvent evt) {                                          
+//        Map<String, Integer>o=lql.stream().collect(Collectors.groupingBy(
+//        QuanLyDat::getMavaten, Collectors.maxBy(QuanLyDat::getSoluong))
+//        );
+//
+//        jTextArea1.setText("ma Tour \t\t Sp Luong");
+//        o.forEach((K,V)->{
+//            jTextArea1.append("\n"+K+"\t\t"+V);
+//        });
+
+ 	// Map<String, Double>o=lql.stream().collect(Collectors.groupingBy(
+        //    DanhSachChamCong::getMavaten, Collectors.summingDouble(DanhSachChamCong::tinhCong))
+        // );
+
+ Map<String, List<BangKe>>o=lql.stream().collect(Collectors.groupingBy(
+            BangKe::getMavaten)
+         );
+         
+        
+        jTextArea1.setText("ma va ten khach \t\t Tong Hoa Don");
+        o.forEach((K,V)->{
+            jTextArea1.append("\n"+K+"\t\t");
+            for(BangKe i:V) 
+                jTextArea1.append(i.getMh().getTen() + " ");
+        });
+        
+    }   
+
+                                          
+     
+}
+
